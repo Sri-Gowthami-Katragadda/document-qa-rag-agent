@@ -1,0 +1,26 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file: .env          # your real GROQ_API_KEY lives here, never in the image
+    ports:
+      - "8000:8000"
+    volumes:
+      - vectorstore_data:/app/data/vectorstore
+      - uploads_data:/app/data/uploads
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    depends_on:
+      - api
+    environment:
+      API_BASE_URL: http://api:8000   # docker-compose service name, not localhost
+    ports:
+      - "8501:8501"
+
+volumes:
+  vectorstore_data:
+  uploads_data:
